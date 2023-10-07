@@ -1,6 +1,6 @@
 
 import 'dart:developer';
-
+import 'package:http/http.dart' as http;
 import 'package:fancy_audio_recorder/fancy_audio_recorder.dart';
 import 'package:flutter/material.dart';
 
@@ -29,15 +29,21 @@ class _SpeechWizState extends State<SpeechWiz> {
             children: [
               AudioRecorderButton(
                 maxRecordDuration: const Duration(seconds: 80),
-                onRecordComplete: (value) {
+                onRecordComplete: (value) async {
                   log('$value');
                   setState(() {
                     test = value;
                   });
+                  var request = http.MultipartRequest('POST', Uri.parse("https://speechwiz-api.neeltron.repl.co/upload"));
+                  request.files.add(await http.MultipartFile.fromPath("file", "$value"));
+                  print(value);
+                  var response = await request.send();
+                  print(response);
                 },
               ),
               Text('$test'),
             ],
+
           ),
         ),
       ),
