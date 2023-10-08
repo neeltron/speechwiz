@@ -71,7 +71,7 @@ class _SpeechWizState extends State<SpeechWiz> {
         mainAxisSize: MainAxisSize.min,
         children: [
           AudioRecorderButton(
-            maxRecordDuration: const Duration(seconds: 80),
+            maxRecordDuration: const Duration(seconds: 300),
             onRecordComplete: (value) async {
               log('$value');
               setState(() {
@@ -84,7 +84,7 @@ class _SpeechWizState extends State<SpeechWiz> {
               print(response);
             },
           ),
-          Text('$test'),
+
         ],
       ),
     );
@@ -108,13 +108,19 @@ Future<Album> fetchAlbum() async {
 
 class Album {
   final String text;
+  final String polarity;
+  final String subjectivity;
   const Album({
-    required this.text
+    required this.text,
+    required this.polarity,
+    required this.subjectivity
   });
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
-        text: json['text'].toString()
+        text: json['text'].toString(),
+        polarity: json['polarity'].toString(),
+        subjectivity: json['subjectivity'].toString()
     );
   }
 }
@@ -132,7 +138,8 @@ Widget getRequest() {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Align(alignment: Alignment.center, child: Text("\nSpeech Report", textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0, color:Colors.green, fontFamily: 'Poppins'),),),
-                Text("\nTranscript: ${snapshot.data!.text}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
+                Text("\nTranscript: \n${snapshot.data!.text}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
+                Text("\nHow will it sound to the listeners?: \n${snapshot.data!.polarity} and ${snapshot.data!.subjectivity}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
               ],
             ),
           ),
