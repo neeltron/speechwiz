@@ -114,7 +114,7 @@ class Album {
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
-        text: json['results'][0]['alternatives'][0]['transcript'].toString()
+        text: json['text'].toString()
     );
   }
 }
