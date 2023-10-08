@@ -110,17 +110,20 @@ class Album {
   final String text;
   final String polarity;
   final String subjectivity;
+  final String matches;
   const Album({
     required this.text,
     required this.polarity,
-    required this.subjectivity
+    required this.subjectivity,
+    required this.matches
   });
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
         text: json['text'].toString(),
         polarity: json['polarity'].toString(),
-        subjectivity: json['subjectivity'].toString()
+        subjectivity: json['subjectivity'].toString(),
+        matches: json['match_list'].toString()
     );
   }
 }
@@ -140,6 +143,7 @@ Widget getRequest() {
                 const Align(alignment: Alignment.center, child: Text("\nSpeech Report", textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0, color:Colors.green, fontFamily: 'Poppins'),),),
                 Text("\nTranscript: \n${snapshot.data!.text}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
                 Text("\nHow will it sound to the listeners?: \n${snapshot.data!.polarity} and ${snapshot.data!.subjectivity}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
+                Text("\nGrammatical Errors: \n${snapshot.data!.matches}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
               ],
             ),
           ),
