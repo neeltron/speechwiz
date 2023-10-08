@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:fancy_audio_recorder/fancy_audio_recorder.dart';
@@ -10,6 +11,7 @@ class SpeechWiz extends StatefulWidget {
 
   @override
   State<SpeechWiz> createState() => _SpeechWizState();
+
 }
 
 class _SpeechWizState extends State<SpeechWiz> {
@@ -17,6 +19,10 @@ class _SpeechWizState extends State<SpeechWiz> {
   int _currentIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    Future<Album> futureAlbum = fetchAlbum();
+  }
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -85,8 +91,57 @@ class _SpeechWizState extends State<SpeechWiz> {
   }
 
   Widget _resScreen() {
-    return const Center(
-      child: Text('Results go hereeee'),
+    return getRequest();
+  }
+}
+
+Future<Album> fetchAlbum() async {
+  final response = await http
+      .get(Uri.parse('https://speechwiz-api.neeltron.repl.co/export'));
+
+  if (response.statusCode == 200) {
+    return Album.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to load album');
+  }
+}
+
+class Album {
+  final String text;
+  const Album({
+    required this.text
+  });
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+        text: json['results'][0]['alternatives'][0]['transcript'].toString()
     );
   }
+}
+
+Widget getRequest() {
+  final formKey = GlobalKey<FormState>();
+  Future<Album> futureAlbum = fetchAlbum();
+  return FutureBuilder<Album>(    future: futureAlbum,
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Align(alignment: Alignment.center, child: Text("\nSpeech Report", textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0, color:Colors.green, fontFamily: 'Poppins'),),),
+                Text("\nTranscript: ${snapshot.data!.text}", style: const TextStyle(fontSize: 16.0, color:Colors.blue, fontFamily: 'Poppins'),),
+              ],
+            ),
+          ),
+        );
+      } else if (snapshot.hasError) {
+        return Text('${snapshot.error}');
+      }
+
+      return const Center(child: CircularProgressIndicator());
+    },
+  );
 }
